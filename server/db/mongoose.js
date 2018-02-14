@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const url = process.env.MONGODB_URI || 'mongodb://localhost:27017';
+const url = encodeURIComponent(process.env.MONGODB_URI || 'mongodb://localhost:27017');
 const dbName = 'ToDoApp';
 
 mongoose.Promise = global.Promise;

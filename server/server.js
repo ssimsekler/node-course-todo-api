@@ -22,6 +22,8 @@ app.post('/todos', (req, res) => {
     }, (err) => {
         console.log(err);
         res.status('400').send(err);
+    }).catch((err) => {
+        res.status(400).send(err);
     });
     // console.log('POST', req.body);
 });
@@ -48,7 +50,7 @@ app.get('/todos/:id', (req, res) => {
             return res.status(404).send();
         }
         res.send({ todo });
-    }).catch((e) => {
+    }).catch((err) => {
         res.status(400).send(err);
     });
 
