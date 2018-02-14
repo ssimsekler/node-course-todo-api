@@ -4,6 +4,12 @@ const url = (process.env.MONGODB_URI) ? encodeURIComponent(process.env.MONGODB_U
 const dbName = 'ToDoApp';
 
 mongoose.Promise = global.Promise;
-mongoose.connect(`${url}/${dbName}`);
+mongoose.connect(`${url}/${dbName}`)
+    .then(() => {
+        console.log(`URL: ${url}`, ' MongoDB connection established.');
+    })
+    .catch((err) => {
+        console.log(`URL: ${url}`, err);
+    });
 
 module.exports.mongoose = mongoose;
