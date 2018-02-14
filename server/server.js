@@ -15,13 +15,13 @@ app.post('/todos', (req, res) => {
         text: req.body.text
     })
     todo.save().then((doc) => {
-        console.log('Record saved', doc);
+        // console.log('Record saved', doc);
         res.send(doc);
     }, (err) => {
         console.log(err);
         res.status('400').send(err);
     });
-    console.log('POST', req.body);
+    // console.log('POST', req.body);
 });
 
 app.get('/todos', (req, res) => {
@@ -31,3 +31,5 @@ app.get('/todos', (req, res) => {
 app.listen(port, () => {
     console.log(`Node server started on port ${port}`);
 })
+
+module.exports = {app};
