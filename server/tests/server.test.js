@@ -35,7 +35,8 @@ describe('POST /todos', () => {
             .expect(200)
             .expect((res) => {
                 expect(res.body.text).toBe(text);
-            }).end((err, res) => { debugger;
+            }).end((err, res) => {
+                debugger;
                 if (err) {
                     return done(err);
                 }
@@ -149,16 +150,21 @@ describe('PATCH /todos/:id', () => {
         var updatedText = "Updated";
         request(app)
             .patch(`/todos/${idToUpdate}`)
-            .send({"text": updatedText })
+            .send({
+                "completed": true,
+                "text": updatedText
+            })
             .expect(200)
-            .expect((res) => {
-                expect(res.body.todo.text).toBe(updatedText);
+            .expect((res) => { debugger;
+                expect(res.body.text).toBe(updatedText);
+                expect(res.body.completed).toBe(true);
+                expect(res.body.completedAt).toBeA('number');
             })
             .end((err, res) => {
                 if (err) {
                     return done(err);
                 }
-                Todo.findById(idToUpdate).then((todo) => {
+                Todo.findById(idToUpdate).then((todo) => { debugger;
                     expect(todo.text).toBe(updatedText);
                     done();
                 }).catch((e) => { console.log(e) });

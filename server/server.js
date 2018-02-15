@@ -96,15 +96,15 @@ app.patch('/todos/:id', (req, res) => {
         .then((todo) => {
             // console.log('Record saved', doc);
             if (!todo) {
-                res.status('400').send();
+                res.status('404').send();
             } else {
                 res.send(todo);
             }
         }, (err) => {
             console.log(err);
-            res.status('400').send(err);
+            res.status('404').send(err);
         }).catch((err) => {
-            res.status(400).send(err);
+            res.status(404).send(err);
         });
 });
 
