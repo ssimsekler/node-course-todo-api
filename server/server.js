@@ -1,14 +1,14 @@
+
 const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
 const { ObjectID } = require('mongodb');
 
+const config = require('./config/config.js');
 const { mongoose } = require('./db/mongoose.js');
 const { Todo } = require('./models/todo.js');
 const { User } = require('./models/user.js');
 
-
-const port = process.env.PORT || 3000;
 
 var app = express();
 app.use(bodyParser.json());
@@ -108,8 +108,8 @@ app.patch('/todos/:id', (req, res) => {
         });
 });
 
-app.listen(port, () => {
-    console.log(`Node server started on port ${port}`);
+app.listen(config.port, () => {
+    console.log(`Node server started on port ${config.port}`);
 })
 
 module.exports = { app };
