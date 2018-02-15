@@ -4,7 +4,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { ObjectID } = require('mongodb');
 
-const config = require('./config/config.js');
+const { config } = require('./config/config.js');
 const { mongoose } = require('./db/mongoose.js');
 const { Todo } = require('./models/todo.js');
 const { User } = require('./models/user.js');
@@ -107,7 +107,7 @@ app.patch('/todos/:id', (req, res) => {
             res.status(404).send(err);
         });
 });
-
+debugger;
 app.listen(config.port, () => {
     console.log(`Node server started on port ${config.port}`);
 })
