@@ -1,4 +1,3 @@
-
 const env = process.env.NODE_ENV || 'development';
 console.log('env *****', env);
 
@@ -9,6 +8,6 @@ if (env === 'development') {
     process.env.MONGODB_URI = `mongodb://localhost:27017/${dbName}Test`;
 };
 
-config = { port: process.env.PORT || 3000 };
-debugger;
+var config = { port: process.env.PORT || 3000 };
+
 module.exports.config = config;

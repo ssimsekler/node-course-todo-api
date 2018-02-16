@@ -1,3 +1,7 @@
+const {
+    config //eslint-disable-line no-unused-vars
+} = require('../config/config.js'); 
+
 const mongoose = require('mongoose');
 
 const url = process.env.MONGODB_URI;
