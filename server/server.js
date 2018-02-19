@@ -10,7 +10,9 @@ const {
     config
 } = require('./config/config.js');
 
-const { mongoose } = require('./db/mongoose.js'); //eslint-disable-line no-unused-vars
+const {
+    mongoose //eslint-disable-line no-unused-vars
+} = require('./db/mongoose.js');
 
 const {
     Todo
@@ -18,7 +20,9 @@ const {
 const {
     User
 } = require('./models/user.js');
-
+const {
+    authenticate
+} = require('./middleware/authenticate.js');
 
 var app = express();
 app.use(bodyParser.json());
@@ -176,6 +180,13 @@ app.post('/users', (req, res) => {
         res.status(400).send(err);
     });
     // console.log('POST', req.body);
+});
+
+//================================================================
+//======== USER:GET ME ===========================================
+//================================================================
+app.get('/users/me', authenticate, (req, res) => {
+    res.send(req.user);
 });
 
 //================================================================
