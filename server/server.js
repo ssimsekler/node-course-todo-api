@@ -167,7 +167,7 @@ app.patch('/todos/:id', (req, res) => {
 app.post('/users', (req, res) => {
 
     var UserIn = _.pick(req.body, ['email', 'password', 'name']);
-    var user = new User(UserIn); debugger;
+    var user = new User(UserIn);
     user.save().then(() => {
         // console.log('Record saved', doc);
         return user.generateAuthToken();

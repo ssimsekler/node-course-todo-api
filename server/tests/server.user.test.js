@@ -14,35 +14,9 @@ const {
     User
 } = require('../models/user.js');
 
-const initialTestUsers = [{
-    _id: new ObjectID(),
-    email: 'person01@acme.com',
-    password: 'Password01!',
-    name: 'Person01 Acme'
-}, {
-    _id: new ObjectID(),
-    email: 'person02@acme.com',
-    password: 'Password02!',
-    name: 'Person02 Acme'
-}, {
-    _id: new ObjectID(),
-    email: 'person03@acme.com',
-    password: 'Password03!',
-    name: 'Person03 Acme'
-}, {
-    _id: new ObjectID(),
-    email: 'person04@acme.com',
-    password: 'Password04!',
-    name: 'Person04  Acme'
-}];
+const {testUsers, populateTestUsers} = require('./seed/seed.js');
 
-beforeEach((done) => {
-    User.remove({}).then(() => {
-        return User.insertMany(initialTestUsers);
-    }).then(() => {
-        done();
-    });
-});
+beforeEach(populateTestUsers);
 
 describe('============ TEST API for the USER entity ============', () => {
     describe('POST /users', () => {
@@ -85,7 +59,7 @@ describe('============ TEST API for the USER entity ============', () => {
                     }
 
                     User.find().then((users) => {
-                        expect(users.length).toBe(initialTestUsers.length);
+                        expect(users.length).toBe(testUsers.length);
                         done();
                     }).catch((e) => done(e));
                 });
@@ -98,7 +72,7 @@ describe('============ TEST API for the USER entity ============', () => {
                 .get('/users')
                 .expect(200)
                 .expect((res) => {
-                    expect(res.body.users.length).toBe(initialTestUsers.length);
+                    expect(res.body.users.length).toBe(testUsers.length);
                 })
                 .end(done);
         });
@@ -107,10 +81,10 @@ describe('============ TEST API for the USER entity ============', () => {
     describe('GET /users/:id', () => {
         it('should return user doc', (done) => {
             request(app)
-                .get(`/users/${initialTestUsers[0]._id.toHexString()}`)
+                .get(`/users/${testUsers[0]._id.toHexString()}`)
                 .expect(200)
                 .expect((res) => {
-                    expect(res.body.user.text).toBe(initialTestUsers[0].text);
+                    expect(res.body.user.text).toBe(testUsers[0].text);
                 })
                 .end(done);
         });
@@ -134,7 +108,7 @@ describe('============ TEST API for the USER entity ============', () => {
 
     describe('DELETE /users/:id', () => {
         it('should delete user doc', (done) => {
-            let idToDelete = initialTestUsers[1]._id.toHexString();
+            let idToDelete = testUsers[1]._id.toHexString();
             request(app)
                 .delete(`/users/${idToDelete}`)
                 .expect(200)
@@ -173,7 +147,7 @@ describe('============ TEST API for the USER entity ============', () => {
 
     describe('PATCH /users/:id', () => {
         it('should update user doc', (done) => {
-            var idToUpdate = initialTestUsers[1]._id.toHexString();
+            var idToUpdate = testUsers[1]._id.toHexString();
             var updatedName = "Updated Name";
             request(app)
                 .patch(`/users/${idToUpdate}`)

@@ -14,24 +14,9 @@ const {
     Todo
 } = require('../models/todo.js');
 
-const initialTestTodos = [{
-    _id: new ObjectID(),
-    text: 'Test to-do 01'
-}, {
-    _id: new ObjectID(),
-    text: 'Test to-do 02'
-}, {
-    _id: new ObjectID(),
-    text: 'Test to-do 03'
-}];
+const {testTodos, populateTestTodos} = require('./seed/seed.js');
 
-beforeEach((done) => {
-    Todo.remove({}).then(() => {
-        return Todo.insertMany(initialTestTodos);
-    }).then(() => {
-        done();
-    });
-});
+beforeEach(populateTestTodos);
 
 describe('============ TEST API for the TODO entity ============', () => {
     describe('POST /todos', () => {
@@ -72,7 +57,7 @@ describe('============ TEST API for the TODO entity ============', () => {
                     }
 
                     Todo.find().then((todos) => {
-                        expect(todos.length).toBe(initialTestTodos.length);
+                        expect(todos.length).toBe(testTodos.length);
                         done();
                     }).catch((e) => done(e));
                 });
@@ -85,7 +70,7 @@ describe('============ TEST API for the TODO entity ============', () => {
                 .get('/todos')
                 .expect(200)
                 .expect((res) => {
-                    expect(res.body.todos.length).toBe(initialTestTodos.length);
+                    expect(res.body.todos.length).toBe(testTodos.length);
                 })
                 .end(done);
         });
@@ -94,10 +79,10 @@ describe('============ TEST API for the TODO entity ============', () => {
     describe('GET /todos/:id', () => {
         it('should return to-do doc', (done) => {
             request(app)
-                .get(`/todos/${initialTestTodos[0]._id.toHexString()}`)
+                .get(`/todos/${testTodos[0]._id.toHexString()}`)
                 .expect(200)
                 .expect((res) => {
-                    expect(res.body.todo.text).toBe(initialTestTodos[0].text);
+                    expect(res.body.todo.text).toBe(testTodos[0].text);
                 })
                 .end(done);
         });
@@ -121,7 +106,7 @@ describe('============ TEST API for the TODO entity ============', () => {
 
     describe('DELETE /todos/:id', () => {
         it('should delete to-do doc', (done) => {
-            let idToDelete = initialTestTodos[1]._id.toHexString();
+            let idToDelete = testTodos[1]._id.toHexString();
             request(app)
                 .delete(`/todos/${idToDelete}`)
                 .expect(200)
@@ -160,7 +145,7 @@ describe('============ TEST API for the TODO entity ============', () => {
 
     describe('PATCH /todos/:id', () => {
         it('should update to-do doc', (done) => {
-            var idToUpdate = initialTestTodos[1]._id.toHexString();
+            var idToUpdate = testTodos[1]._id.toHexString();
             var updatedText = "Updated";
             request(app)
                 .patch(`/todos/${idToUpdate}`)
