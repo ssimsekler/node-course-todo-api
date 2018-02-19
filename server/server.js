@@ -164,12 +164,14 @@ app.post('/users', (req, res) => {
 
     var UserIn = _.pick(req.body, ['email', 'pwdhash', 'name']);
     var user = new User(UserIn);
-    user.save().then((doc) => {
+    user.save().then(() => {
         // console.log('Record saved', doc);
-        res.send(doc);
+        return user.generateAuthToken();
     }, (err) => {
         console.log(err);
         res.status('400').send(err);
+    }).then((token) => {
+        res.header('x-auth', token).send(user);
     }).catch((err) => {
         res.status(400).send(err);
     });
