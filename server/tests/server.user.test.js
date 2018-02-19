@@ -17,22 +17,22 @@ const {
 const initialTestUsers = [{
     _id: new ObjectID(),
     email: 'person01@acme.com',
-    pwdhash: '4b8f353889d9a05d17946e26d014efe99407cba8bd9d0102d4aab10ce6229043',
+    password: 'Password01!',
     name: 'Person01 Acme'
 }, {
     _id: new ObjectID(),
     email: 'person02@acme.com',
-    pwdhash: '08f0d4cb02352f2f7fd251fbbe1c9aa5fd176bb0c7f1bd35e4f71a8dcb820852',
+    password: 'Password02!',
     name: 'Person02 Acme'
 }, {
     _id: new ObjectID(),
     email: 'person03@acme.com',
-    pwdhash: 'e7b6e642dffba360595333cf7e78d1c0a5b2fb2f5d28e774095fd88000a659b6',
+    password: 'Password03!',
     name: 'Person03 Acme'
 }, {
     _id: new ObjectID(),
     email: 'person04@acme.com',
-    pwdhash: 'ddc1fc3a789a050b64e06955f2ea275e7e6a01899518cbbb02ce7169d75d964c',
+    password: 'Password04!',
     name: 'Person04  Acme'
 }];
 
@@ -50,7 +50,7 @@ describe('============ TEST API for the USER entity ============', () => {
             var newUser = {
                 _id: new ObjectID(),
                 email: 'personTestCreate@acme.com',
-                pwdhash: 'c2d44b6bb78ded3867a3f942b13abc444575f031335ed33f15bfd0803ee28622',
+                password: 'Passwordtestuser01!',
                 name: 'Person TestCreate Acme'
             };
 

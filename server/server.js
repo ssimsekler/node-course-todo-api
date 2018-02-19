@@ -166,8 +166,8 @@ app.patch('/todos/:id', (req, res) => {
 //================================================================
 app.post('/users', (req, res) => {
 
-    var UserIn = _.pick(req.body, ['email', 'pwdhash', 'name']);
-    var user = new User(UserIn);
+    var UserIn = _.pick(req.body, ['email', 'password', 'name']);
+    var user = new User(UserIn); debugger;
     user.save().then(() => {
         // console.log('Record saved', doc);
         return user.generateAuthToken();
@@ -259,7 +259,7 @@ app.delete('/users/:id', (req, res) => {
 app.patch('/users/:id', (req, res) => {
     // console.log('GET', req.body);
     var id = req.params.id;
-    var body = _.pick(req.body, ['email', 'pwdhash', 'name']);
+    var body = _.pick(req.body, ['email', 'password', 'name']);
     if (!ObjectID.isValid(id)) {
         return res.status(404).send({
             error: 'ID not valid!'
