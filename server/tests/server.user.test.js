@@ -6,7 +6,7 @@ const {
 
 const {
     mongoose //eslint-disable-line no-unused-vars
-} = require('../db/mongoose.js'); 
+} = require('../db/mongoose.js');
 const {
     app
 } = require('../server.js');
@@ -14,7 +14,10 @@ const {
     User
 } = require('../models/user.js');
 
-const {testUsers, populateTestUsers} = require('./seed/seed.js');
+const {
+    testUsers,
+    populateTestUsers
+} = require('./seed/seed.js');
 
 beforeEach(populateTestUsers);
 
@@ -33,27 +36,84 @@ describe('============ TEST API for the USER entity ============', () => {
                 .send(newUser)
                 .expect(200)
                 .expect((res) => {
+                    expect(res.headers['x-auth']).toExist();
+                    expect(res.body._id).toExist();
                     expect(res.body.name).toBe(newUser.name);
+                    expect(res.body.email).toBe(newUser.email);
                 }).end((err, res) => { // eslint-disable-line no-unused-vars
                     if (err) {
                         return done(err);
                     }
                     User.find({
-                        name: newUser.name
+                        email: newUser.email
                     }).then((users) => {
                         expect(users.length).toBe(1);
+                        expect(users[0].email).toBe(newUser.email);
                         expect(users[0].name).toBe(newUser.name);
+                        expect(users[0].password).toNotBe(newUser.password);
+                        done();
+                    }).catch((e) => done(e));
+                });
+        });
+
+        it('should not create a user with empty body data', (done) => {
+            request(app)
+                .post('/users')
+                .send({})
+                .expect(400)
+                .end((err, res) => { // eslint-disable-line no-unused-vars
+                    if (err) {
+                        return done(err);
+                    }
+
+                    User.find().then((users) => {
+                        expect(users.length).toBe(testUsers.length);
                         done();
                     }).catch((e) => done(e));
                 });
         });
 
         it('should not create a user with invalid body data', (done) => {
+            var newUser = {
+                _id: new ObjectID(),
+                email: 'personTestCreateacme.com',
+                password: 'Passwordtestuser01!',
+                name: 'Person TestCreate Acme'
+            };
+
             request(app)
                 .post('/users')
-                .send({})
+                .send(newUser)
                 .expect(400)
-                .end((err, res) => { // eslint-disable-line no-unused-vars
+                .expect((res) => {
+                    // expect(res.body).toBe({});
+                }).end((err, res) => { // eslint-disable-line no-unused-vars
+                    if (err) {
+                        return done(err);
+                    }
+
+                    User.find().then((users) => {
+                        expect(users.length).toBe(testUsers.length);
+                        done();
+                    }).catch((e) => done(e));
+                });
+        });
+
+        it('should not create a user with existing e-mail address', (done) => {
+            var newUser = {
+                _id: new ObjectID(),
+                email: testUsers[0].email,
+                password: 'Passwordtestuser01!',
+                name: 'Person TestCreate Acme'
+            };
+
+            request(app)
+                .post('/users')
+                .send(newUser)
+                .expect(400)
+                .expect((res) => {
+                    // expect(res.body).toBe({});
+                }).end((err, res) => { // eslint-disable-line no-unused-vars
                     if (err) {
                         return done(err);
                     }
@@ -74,6 +134,27 @@ describe('============ TEST API for the USER entity ============', () => {
                 .expect((res) => {
                     expect(res.body.users.length).toBe(testUsers.length);
                 })
+                .end(done);
+        });
+    });
+
+    describe('GET /users/me', () => {
+        it('should get my user based on token in the header', (done) => {
+            request(app)
+                .get('/users/me')
+                .set('x-auth', testUsers[0].tokens[0].token)
+                .expect(200)
+                .expect((res) => {
+                    expect(res.body._id).toBe(testUsers[0]._id.toHexString());
+                    expect(res.body.email).toBe(testUsers[0].email);
+                })
+                .end(done);
+        });
+        it('should return 401 if bot authenticated', (done) => {
+            request(app)
+                .get('/users/me')
+                .set('x-auth', '123')
+                .expect(401)
                 .end(done);
         });
     });
