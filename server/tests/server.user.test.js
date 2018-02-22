@@ -85,7 +85,7 @@ describe('============ TEST API for the USER entity ============', () => {
                 .post('/users')
                 .send(newUser)
                 .expect(400)
-                .expect((res) => {
+                .expect((res) => { //eslint-disable-line no-unused-vars
                     // expect(res.body).toBe({});
                 }).end((err, res) => { // eslint-disable-line no-unused-vars
                     if (err) {
@@ -111,7 +111,7 @@ describe('============ TEST API for the USER entity ============', () => {
                 .post('/users')
                 .send(newUser)
                 .expect(400)
-                .expect((res) => {
+                .expect((res) => { //eslint-disable-line no-unused-vars
                     // expect(res.body).toBe({});
                 }).end((err, res) => { // eslint-disable-line no-unused-vars
                     if (err) {
