@@ -173,8 +173,15 @@ app.post('/users/login', (req, res) => {
     }).catch((e) => { //eslint-disable-line no-unused-vars
         res.status(400).send();
     });
+});
 
-
+//================================================================
+//======== USER:LOGOUT ===========================================
+//================================================================
+app.delete('/users/me/token', authenticate, (req, res) => { debugger;
+    req.user.removeToken(req.token).then((user) => {
+        res.status(200).send(user);
+    });
 });
 
 //================================================================

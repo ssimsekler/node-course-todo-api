@@ -72,6 +72,18 @@ UserSchema.methods.generateAuthToken = function () { //Not an arrow function bec
     });
 };
 
+UserSchema.methods.removeToken = function (token) { //Not an arrow function because we require this binding
+    var user = this;
+
+    return user.update({
+        $pull: {
+            tokens: {
+                token: token
+            }
+        }
+    });
+};
+
 UserSchema.statics.findByToken = function (token) {
     var User = this;
     var decoded;

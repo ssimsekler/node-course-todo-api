@@ -126,6 +126,77 @@ describe('============ TEST API for the USER entity ============', () => {
         });
     });
 
+    describe('POST /users/login', () => {
+        it('should login user and return auth token', (done) => {
+            request(app)
+                .post('/users/login')
+                .send({
+                    email: testUsers[0].email,
+                    password: testUsers[0].password
+                })
+                .expect(200)
+                .expect((res) => {
+                    expect(res.headers['x-auth']).toExist();
+                })
+                .end((err, res) => {
+                    User.findById(testUsers[0]._id).then((user) => {
+                        expect(user.tokens[1]).toInclude({
+                            access: 'auth',
+                            token: res.headers['x-auth']
+                        });
+                        done();
+                    }).catch((e) => {
+                        done(e);
+                    });
+                });
+        });
+
+        it('should not login user with incorrect password', (done) => {
+            request(app)
+                .post('/users/login')
+                .send({
+                    email: testUsers[0].email,
+                    password: '123'
+                })
+                .expect(400)
+                .expect((res) => {
+                    expect(res.headers['x-auth']).toNotExist();
+                })
+                .end(done);
+        });
+
+        it('should not login non-existing user', (done) => {
+            request(app)
+                .post('/users/login')
+                .send({
+                    email: 'kkklll@blah.wwwqw',
+                    password: '123'
+                })
+                .expect(400)
+                .expect((res) => {
+                    expect(res.headers['x-auth']).toNotExist();
+                })
+                .end(done);
+        });
+    });
+
+    describe('DELETE /users/me/token', () => {
+        it('should remove token', (done) => {
+            request(app)
+                .delete('/users/me/token')
+                .set('x-auth', testUsers[1].tokens[0].token)
+                .expect(200)
+                .end((err, res) => {
+                    User.findById(testUsers[1]._id).then((user) => {
+                        expect(user.tokens.length).toBe(0);
+                        done();
+                    }).catch((e) => {
+                        done(e);
+                    });
+                });
+        });
+    });
+
     describe('GET /users', () => {
         it('should get all users', (done) => {
             request(app)
@@ -150,7 +221,7 @@ describe('============ TEST API for the USER entity ============', () => {
                 })
                 .end(done);
         });
-        it('should return 401 if bot authenticated', (done) => {
+        it('should return 401 if not authenticated', (done) => {
             request(app)
                 .get('/users/me')
                 .set('x-auth', '123')
@@ -204,7 +275,7 @@ describe('============ TEST API for the USER entity ============', () => {
                         expect(user).toNotExist();
                         done();
                     }).catch((e) => {
-                        console.log(e);
+                        done(e);
                     });
                 });
         });
@@ -247,7 +318,7 @@ describe('============ TEST API for the USER entity ============', () => {
                         expect(user.name).toBe(updatedName);
                         done();
                     }).catch((e) => {
-                        console.log(e);
+                        done(e);
                     });
                 });
         });
