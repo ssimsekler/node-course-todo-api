@@ -4,6 +4,10 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const _ = require('lodash');
 
+const {
+    config
+} = require('../config/config.js');
+
 var UserSchema = new mongoose.Schema({
     email: {
         type: String,
@@ -60,7 +64,7 @@ UserSchema.methods.generateAuthToken = function () { //Not an arrow function bec
     var token = jwt.sign({
         _id: user._id.toHexString(),
         access
-    }, 'abc123').toString();
+    }, config.jwt_secret).toString();
 
     user.tokens = user.tokens.concat([{
         access,
@@ -89,7 +93,7 @@ UserSchema.statics.findByToken = function (token) {
     var decoded;
 
     try {
-        decoded = jwt.verify(token, 'abc123');
+        decoded = jwt.verify(token, config.jwt_secret);
     } catch (e) {
         // return new Promise((resolve, reject) => {
         //     reject();

@@ -34,9 +34,14 @@ app.use(bodyParser.json());
 //================================================================
 //======== TODO:CREATE ===========================================
 //================================================================
-app.post('/todos', (req, res) => {
+app.post('/todos', authenticate, (req, res) => {
+
+    if (!req.user._id) {
+        res.status(401).send();
+    }
     var todo = new Todo({
         text: req.body.text,
+        _creator: req.user._id,
         completed: req.body.completed,
         completedAt: req.body.completedAt
     });
@@ -55,9 +60,11 @@ app.post('/todos', (req, res) => {
 //================================================================
 //======== TODO:READ ALL =========================================
 //================================================================
-app.get('/todos', (req, res) => {
+app.get('/todos', authenticate, (req, res) => {
     // console.log('GET', req.body);
-    Todo.find().then((todos) => {
+    Todo.find({
+        _creator: req.user._id
+    }).then((todos) => {
         res.send({
             todos
         });
@@ -70,7 +77,7 @@ app.get('/todos', (req, res) => {
 //================================================================
 //======== TODO:READ =============================================
 //================================================================
-app.get('/todos/:id', (req, res) => {
+app.get('/todos/:id', authenticate, (req, res) => {
     // console.log('GET', req.body);
     var id = req.params.id;
     if (!ObjectID.isValid(id)) {
@@ -79,10 +86,16 @@ app.get('/todos/:id', (req, res) => {
         });
     }
 
-    Todo.findById(id).then((todo) => {
+    Todo.findOne({
+        _id: id,
+        _creator: req.user._id
+    }).then((todo) => {
         if (!todo) {
             return res.status(404).send();
         }
+        // if (todo._creator.toHexString() !== req.user._id.toHexString()) {
+        //     return res.status(401).send();
+        // }
         res.send({
             todo
         });
@@ -95,7 +108,7 @@ app.get('/todos/:id', (req, res) => {
 //================================================================
 //======== TODO:DELETE ===========================================
 //================================================================
-app.delete('/todos/:id', (req, res) => {
+app.delete('/todos/:id', authenticate, (req, res) => {
     // console.log('GET', req.body);
     var id = req.params.id;
     if (!ObjectID.isValid(id)) {
@@ -103,8 +116,10 @@ app.delete('/todos/:id', (req, res) => {
             error: 'ID not valid!'
         });
     }
-
-    Todo.findByIdAndRemove(id).then((todo) => {
+    Todo.findByIdAndRemove({
+        _id: id,
+        _creator: req.user._id
+    }).then((todo) => {
         if (!todo) {
             return res.status(404).send();
         }
@@ -119,7 +134,7 @@ app.delete('/todos/:id', (req, res) => {
 //================================================================
 //======== TODO:UPDATE ===========================================
 //================================================================
-app.patch('/todos/:id', (req, res) => {
+app.patch('/todos/:id', authenticate, (req, res) => {
     // console.log('GET', req.body);
     var id = req.params.id;
     var body = _.pick(req.body, ['text', 'completed']);
@@ -137,24 +152,26 @@ app.patch('/todos/:id', (req, res) => {
         body.completedAt = null;
     }
 
-    Todo.findByIdAndUpdate(id, {
-            $set: body
-        }, {
-            new: true
-        })
-        .then((todo) => {
-            // console.log('Record saved', doc);
-            if (!todo) {
-                res.status('404').send();
-            } else {
-                res.send(todo);
-            }
-        }, (err) => {
-            console.log(err);
-            res.status('404').send(err);
-        }).catch((err) => {
-            res.status(404).send(err);
-        });
+    Todo.findOneAndUpdate({
+        _id: id,
+        _creator: req.user._id
+    }, {
+        $set: body
+    }, {
+        new: true
+    }).then((todo) => {
+        // console.log('Record saved', doc);
+        if (!todo) {
+            res.status('404').send();
+        } else {
+            res.send(todo);
+        }
+    }, (err) => {
+        console.log(err);
+        res.status('404').send(err);
+    }).catch((err) => {
+        res.status(400).send(err);
+    });
 });
 
 //================================================================
@@ -178,7 +195,7 @@ app.post('/users/login', (req, res) => {
 //================================================================
 //======== USER:LOGOUT ===========================================
 //================================================================
-app.delete('/users/me/token', authenticate, (req, res) => { debugger;
+app.delete('/users/me/token', authenticate, (req, res) => {
     req.user.removeToken(req.token).then((user) => {
         res.status(200).send(user);
     });

@@ -4,7 +4,7 @@ const {
 
 const mongoose = require('mongoose');
 
-const url = process.env.MONGODB_URI;
+const url = config.mongodb_uri;
 
 mongoose.Promise = global.Promise;
 mongoose.connect(`${url}`)

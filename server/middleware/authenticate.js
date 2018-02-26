@@ -3,7 +3,7 @@ const {
 } = require('../models/user.js');
 
 //Authentication
-var authenticate = (req, res, next) => {
+var authenticate = (req, res, next) => { debugger;
 
     var token = req.header('x-auth');
     User.findByToken(token).then((user) => {

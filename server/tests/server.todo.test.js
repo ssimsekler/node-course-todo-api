@@ -14,7 +14,7 @@ const {
     Todo
 } = require('../models/todo.js');
 
-const {testTodos, populateTestTodos} = require('./seed/seed.js');
+const {testUsers, testTodos, populateTestTodos} = require('./seed/seed.js');
 
 beforeEach(populateTestTodos);
 
@@ -25,6 +25,7 @@ describe('============ TEST API for the TODO entity ============', () => {
 
             request(app)
                 .post('/todos')
+                .set('x-auth', testUsers[0].tokens[0].token)
                 .send({
                     text
                 })
@@ -35,12 +36,12 @@ describe('============ TEST API for the TODO entity ============', () => {
                     if (err) {
                         return done(err);
                     }
-
                     Todo.find({
                         text
                     }).then((todos) => {
                         expect(todos.length).toBe(1);
                         expect(todos[0].text).toBe(text);
+                        expect(todos[0]._creator.toHexString()).toBe(testUsers[0]._id.toHexString());
                         done();
                     }).catch((e) => done(e));
                 });
@@ -49,6 +50,7 @@ describe('============ TEST API for the TODO entity ============', () => {
         it('should not create a todo with invalid body data', (done) => {
             request(app)
                 .post('/todos')
+                .set('x-auth', testUsers[0].tokens[0].token)
                 .send({})
                 .expect(400)
                 .end((err, res) => { // eslint-disable-line no-unused-vars
@@ -68,6 +70,7 @@ describe('============ TEST API for the TODO entity ============', () => {
         it('should get all to-dos', (done) => {
             request(app)
                 .get('/todos')
+                .set('x-auth', testUsers[0].tokens[0].token)
                 .expect(200)
                 .expect((res) => {
                     expect(res.body.todos.length).toBe(testTodos.length);
@@ -80,6 +83,7 @@ describe('============ TEST API for the TODO entity ============', () => {
         it('should return to-do doc', (done) => {
             request(app)
                 .get(`/todos/${testTodos[0]._id.toHexString()}`)
+                .set('x-auth', testUsers[0].tokens[0].token)
                 .expect(200)
                 .expect((res) => {
                     expect(res.body.todo.text).toBe(testTodos[0].text);
@@ -92,6 +96,7 @@ describe('============ TEST API for the TODO entity ============', () => {
             // console.log('Test object ID:', newTestID);
             request(app)
                 .get(`/todos/${newTestID}`)
+                .set('x-auth', testUsers[0].tokens[0].token)
                 .expect(404)
                 .end(done);
         });
@@ -99,6 +104,7 @@ describe('============ TEST API for the TODO entity ============', () => {
         it('should return 404 for non-object-ids', (done) => {
             request(app)
                 .get(`/todos/123`)
+                .set('x-auth', testUsers[0].tokens[0].token)
                 .expect(404)
                 .end(done);
         });
@@ -109,6 +115,7 @@ describe('============ TEST API for the TODO entity ============', () => {
             let idToDelete = testTodos[1]._id.toHexString();
             request(app)
                 .delete(`/todos/${idToDelete}`)
+                .set('x-auth', testUsers[0].tokens[0].token)
                 .expect(200)
                 .expect((res) => {
                     expect(res.body.todo._id).toBe(idToDelete);
@@ -131,6 +138,7 @@ describe('============ TEST API for the TODO entity ============', () => {
             // console.log('Test object ID:', newTestID);
             request(app)
                 .delete(`/todos/${newTestID}`)
+                .set('x-auth', testUsers[0].tokens[0].token)
                 .expect(404)
                 .end(done);
         });
@@ -138,6 +146,7 @@ describe('============ TEST API for the TODO entity ============', () => {
         it('should return 404 for non-object-ids', (done) => {
             request(app)
                 .delete(`/todos/123`)
+                .set('x-auth', testUsers[0].tokens[0].token)
                 .expect(404)
                 .end(done);
         });
@@ -149,6 +158,7 @@ describe('============ TEST API for the TODO entity ============', () => {
             var updatedText = "Updated";
             request(app)
                 .patch(`/todos/${idToUpdate}`)
+                .set('x-auth', testUsers[0].tokens[0].token)
                 .send({
                     "completed": true,
                     "text": updatedText
@@ -177,6 +187,7 @@ describe('============ TEST API for the TODO entity ============', () => {
             // console.log('Test object ID:', newTestID);
             request(app)
                 .patch(`/todos/${newTestID}`)
+                .set('x-auth', testUsers[0].tokens[0].token)
                 .expect(404)
                 .end(done);
         });
@@ -184,6 +195,7 @@ describe('============ TEST API for the TODO entity ============', () => {
         it('should return 404 for non-object-ids', (done) => {
             request(app)
                 .patch(`/todos/123`)
+                .set('x-auth', testUsers[0].tokens[0].token)
                 .expect(404)
                 .end(done);
         });

@@ -12,10 +12,15 @@ const {
     User
 } = require('../../models/user.js');
 
-const secretKey = 'abc123';
+const {
+    config
+} = require('../../config/config.js');
+
+const numberOfUsers = 5;
+const numberOfTodos = 10;
 
 var testUsers = [];
-for (let i = 0; i < 5; i++) {
+for (let i = 0; i < numberOfUsers; i++) {
     let userId = new ObjectID();
     let userSuffix = (i+1).toString();
     testUsers.push({
@@ -28,7 +33,7 @@ for (let i = 0; i < 5; i++) {
             token: jwt.sign({
                 _id: userId,
                 access: 'auth'
-            }, secretKey).toString()
+            }, config.jwt_secret).toString()
         }]
     });
 }
@@ -63,16 +68,16 @@ for (let i = 0; i < 5; i++) {
 // }];
 
 
-const testTodos = [{
-    _id: new ObjectID(),
-    text: 'Test to-do 01'
-}, {
-    _id: new ObjectID(),
-    text: 'Test to-do 02'
-}, {
-    _id: new ObjectID(),
-    text: 'Test to-do 03'
-}];
+// const testTodos = [{
+//     _id: new ObjectID(),
+//     text: 'Test to-do 01'
+// }, {
+//     _id: new ObjectID(),
+//     text: 'Test to-do 02'
+// }, {
+//     _id: new ObjectID(),
+//     text: 'Test to-do 03'
+// }];
 
 const populateTestUsers = (done) => {
     User.remove({}).then(() => {
@@ -86,6 +91,17 @@ const populateTestUsers = (done) => {
         done();
     });
 };
+
+var testTodos = [];
+for (let i = 0; i < numberOfTodos; i++) {
+    let todoId = new ObjectID();
+    let todoSuffix = (i+1).toString();
+    testTodos.push({
+        _id: todoId,
+        text: `To-do ${todoSuffix}`,
+        _creator: testUsers[0]._id
+    });
+}
 
 const populateTestTodos = (done) => {
     Todo.remove({}).then(() => {
