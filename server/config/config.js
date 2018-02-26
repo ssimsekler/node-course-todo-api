@@ -13,5 +13,7 @@ var configOut = {
     mongodb_uri: process.env.MONGDB_URI,
     jwt_secret: process.env.JWT_SECRET
 };
+console.log('Config:', configOut);
+console.log('process.env', process.env.MONGDB_URI, process.env.JWT_SECRET);
 
 module.exports.config = configOut;
