@@ -10,10 +10,10 @@ if (env === 'development' || env === 'test') {
 }
 var configOut = {
     port: process.env.PORT || 3000,
-    mongodb_uri: process.env.MONGDB_URI,
+    mongodb_uri: process.env.MONGODB_URI,
     jwt_secret: process.env.JWT_SECRET
 };
 console.log('Config:', configOut);
-console.log('process.env', process.env.MONGDB_URI, process.env.JWT_SECRET);
+console.log('process.env', process.env.MONGODB_URI, process.env.JWT_SECRET);
 
 module.exports.config = configOut;
